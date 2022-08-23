@@ -10,7 +10,7 @@ import { CommonContextRef } from "./types";
 
 const CanvasPuzzle = () => {
 
-    const value  = useRef<CommonContextRef>({SetImage : undefined,SetMessage : undefined,lineCount : 2,containerSize : 480,puzzleCount : 3});
+    const value  = useRef<CommonContextRef>({SetImage : undefined,SetMessage : undefined,lineCount : 2,containerSize : 480,puzzleCount : 3,isAnimation : false,isDone : false});
 
     return (
         <div id={Style.CanvasArea}>

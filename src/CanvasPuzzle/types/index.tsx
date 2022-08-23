@@ -8,6 +8,8 @@ export type CommonContextRef = {
     lineCount : number,
     containerSize : number,
     puzzleCount : number,
+    isAnimation : boolean,
+    isDone : boolean,
 }
 
 export type CanvasPuzzleType = {
@@ -22,3 +24,7 @@ export type LineType = {
     mode : 'Vertical' | 'Horizontal',
     index : number,
 }
+
+type dir = 'e' | 'w' | 's' | 'n';
+
+export type MovePositionAPI = (dir : dir) => void;

@@ -8,16 +8,17 @@ import LineElement from './LineElement';
 const CanvasPuzzleGroup = () => {
 
     const [render,SetRender] = useState(false);
-    const commonContext = useContext<CommonContextType>(CommonContext);
+    const context = useContext<CommonContextType>(CommonContext);
 
-    const width = Math.floor(commonContext.current.containerSize / commonContext.current.puzzleCount);
+    const width = Math.floor(context.current.containerSize / context.current.puzzleCount);
 
     const canvasRenderingContextArray : MutableRefObject<MutableRefObject<any>[]> = useRef([]);
     const [lineObjects,SetLineObjects] = useState<LineType[]>([]);
+
   
     const AnimationAction = (CallBack : () => void) => {
 
-        let limit = commonContext.current.lineCount * 2;
+        let limit = context.current.lineCount * 2;
         let count = 0;
 
         const Action = () => {
@@ -25,7 +26,7 @@ const CanvasPuzzleGroup = () => {
             setTimeout(() => {
                 SetLineObjects((prev) => {
                     let lineObject : LineType;
-                    if(count < commonContext.current.lineCount){
+                    if(count < context.current.lineCount){
                         lineObject = {mode : 'Vertical',index : count}; 
                     }else{
                         lineObject = {mode : 'Horizontal',index : (count-2)};
@@ -71,7 +72,7 @@ const CanvasPuzzleGroup = () => {
         let count = 0;
 
         const Check = () => {
-            return count < (commonContext.current.puzzleCount * commonContext.current.puzzleCount) - 1;
+            return count < (context.current.puzzleCount * context.current.puzzleCount) - 1;
         }
 
         while(Check()){
@@ -118,14 +119,16 @@ const CanvasPuzzleGroup = () => {
     
             }
 
+            context.current.isDone = true;
             SetRender(!render);
-           // commonContext.current.isReady = true;
+           
         });
     }
 
     useEffect(() => {
-        commonContext.current.SetImage = SetImageAction;
+        context.current.SetImage = SetImageAction;
     },[])
+    
 
     return (
         <div id={Style.CanvasPuzzleGroup}>
@@ -140,6 +143,29 @@ const CanvasPuzzleGroup = () => {
                     canvasPuzzleArray.current.map((value,index) => {
                         return (
                             <CanvasPuzzleElement 
+                                ChangeAction={(target : CanvasPuzzleType, posX : number, posY : number) => {
+                                    const another = canvasPuzzleArray.current.find( obj => obj.current_x == posX && obj.current_y == posY);
+
+                                    if(!another){
+                                        target.current_x = posX;
+                                        target.current_y = posY;
+
+                                        SetRender(!render);
+                                    }
+
+                                    
+                                }}
+                                CheckAction={()=>{
+                                    
+                                    const totalPuzzle = context.current.puzzleCount * context.current.puzzleCount;
+                                    const check = canvasPuzzleArray.current.filter( obj => obj.current_x == obj.origin_x && obj.current_y == obj.origin_y );
+                                    console.log(check.length);
+                                    if(check.length == (totalPuzzle-1)){
+                                        context.current.SetMessage?.('축하합니다! 전부 완성하셨네요!');
+                                    }
+
+                                }}
+                                object={value}
                                 key={'canvas_div_' + index} 
                                 canvasRenderingContextArray={canvasRenderingContextArray} 
                                 x={(value.current_x+1)} 
